@@ -21,8 +21,8 @@ async function main() {
   console.log(JSON.stringify({ signerKeypair, encryptKeypair }, null, 2));
   console.log("\n\n");
 
-  const signerJwt = await sign(signerKeypair.keypair);
-  const encryptJwt = await sign(encryptKeypair.keypair);
+  const signerJwt = await sign(signerKeypair);
+  const encryptJwt = await sign(encryptKeypair);
 
   console.log("========================================================");
   console.log("|  Signed Keypair");
@@ -42,10 +42,10 @@ async function main() {
   console.log(signerPublicKey);
   console.log("\n\n");
 
-  const verification = await jwtVerify(
-    signerJwt,
-    await importSPKI(signerPublicKey)
-  );
+  const verification = {
+    signerJwt: await jwtVerify(signerJwt, await importSPKI(signerPublicKey)),
+    encryptJwt: await jwtVerify(encryptJwt, await importSPKI(signerPublicKey)),
+  };
   console.log("========================================================");
   console.log("|  Verification Result");
   console.log("========================================================");
@@ -63,11 +63,8 @@ async function generateEncryptedKeyPair() {
   const encryptedPrivateKey = await encryptKMS(keypair.privateKey);
 
   return {
-    keypair: {
-      privateKey: encryptedPrivateKey,
-      publicKey: keypair.publicKey,
-    },
-    decryptedPrivateKey: keypair.privateKey,
+    privateKey: encryptedPrivateKey,
+    publicKey: keypair.publicKey,
   };
 }
 
