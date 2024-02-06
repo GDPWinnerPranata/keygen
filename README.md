@@ -12,7 +12,7 @@ keys.json
 │                  │     └ ─ ─ publicKey
 │                  │           ├ ─ ─ x: <x-coordinate>
 │                  │           └ ─ ─ y: <y-coordinate>
-│                  └ ─ ─ <signature>: <JWS signed by signer private key>
+│                  └ ─ ─ <signature>: <JWS signed by KMS signer>
 │
 └──── encryptKey : <JWT>
                    ├ ─ ─ <header>
@@ -22,7 +22,7 @@ keys.json
                    │     └ ─ ─ publicKey
                    │           ├ ─ ─ x: <x-coordinate>
                    │           └ ─ ─ y: <y-coordinate>
-                   └ ─ ─ <signature>: <JWS signed by signer private key>
+                   └ ─ ─ <signature>: <JWS signed by KMS signer>
 ```
 
 ## How to Run
