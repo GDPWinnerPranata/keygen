@@ -4,6 +4,58 @@ const { SignJWT, importPKCS8 } = require("jose");
 const fs = require("fs");
 const env = require("./env");
 
+main().catch(console.error);
+
+async function main() {
+  const signerKeypair = await generateEncryptedKeyPair();
+  const encryptKeypair = await generateEncryptedKeyPair();
+
+  const signerJwt = await sign(
+    signerKeypair.keypair,
+    signerKeypair.decryptedPrivateKey
+  );
+  const encryptJwt = await sign(
+    encryptKeypair.keypair,
+    signerKeypair.decryptedPrivateKey
+  );
+
+  const filename = "keys.json";
+  const data = JSON.stringify({ signerJwt, encryptJwt }, null, 2);
+  fs.writeFileSync(filename, data);
+
+  console.log(data);
+  console.log();
+  console.log(`[!] Key generated at '${filename}' successfully!`);
+}
+
+// =================================== CORE ====================================
+
+async function generateEncryptedKeyPair() {
+  const keypair = generateKeyPair();
+  const encryptedPrivateKey = await encryptKMS(keypair.privateKey);
+
+  return {
+    keypair: {
+      privateKey: encryptedPrivateKey,
+      publicKey: keypair.publicKey,
+    },
+    decryptedPrivateKey: keypair.privateKey,
+  };
+}
+
+async function sign(payload, privateKey) {
+  const secret = await importPKCS8(privateKey);
+  const jwt = await new SignJWT(payload)
+    .setProtectedHeader({
+      alg: "ES256",
+    })
+    .sign(secret);
+
+  return jwt;
+}
+
+// =================================== UTILS ===================================
+
 function generateKeyPair() {
   const {
     privateKey,
@@ -46,51 +98,3 @@ async function encryptKMS(plaintext) {
   );
   return ciphertext;
 }
-
-async function generateEncryptedKeyPair() {
-  const keypair = generateKeyPair();
-  const encryptedPrivateKey = await encryptKMS(keypair.privateKey);
-
-  return {
-    keypair: {
-      privateKey: encryptedPrivateKey,
-      publicKey: keypair.publicKey,
-    },
-    decryptedPrivateKey: keypair.privateKey,
-  };
-}
-
-async function sign(payload, privateKey) {
-  const secret = await importPKCS8(privateKey);
-  const jwt = await new SignJWT(payload)
-    .setProtectedHeader({
-      alg: "ES256",
-    })
-    .sign(secret);
-
-  return jwt;
-}
-
-async function main() {
-  const signerKeypair = await generateEncryptedKeyPair();
-  const encryptKeypair = await generateEncryptedKeyPair();
-
-  const signerJwt = await sign(
-    signerKeypair.keypair,
-    signerKeypair.decryptedPrivateKey
-  );
-  const encryptJwt = await sign(
-    encryptKeypair.keypair,
-    signerKeypair.decryptedPrivateKey
-  );
-
-  const filename = "keys.json";
-  const data = JSON.stringify({ signerJwt, encryptJwt }, null, 2);
-  fs.writeFileSync(filename, data);
-
-  console.log(data);
-  console.log();
-  console.log(`[!] Key generated at '${filename}' successfully!`);
-}
-
-main().catch(console.error);

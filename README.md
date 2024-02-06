@@ -28,6 +28,12 @@ keys.json
 ## How to Run
 
 1. Clone repository
+
+```bash
+git clone git@github.com:GDPWinnerPranata/keygen.git
+cd keygen
+```
+
 2. Install Dependencies
 
 ```bash
