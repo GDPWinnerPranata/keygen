@@ -55,3 +55,9 @@ cp .env.example .env
 ```bash
 npm start
 ```
+
+## How to Test
+
+```bash
+npm test
+```
