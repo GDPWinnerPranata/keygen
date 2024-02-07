@@ -1,5 +1,9 @@
 # Keygen
 
+- Generates 2 keypairs: Signing Keypair & Encryption Keypair
+- Each keypair's private key is **encrypted using KMS SYMMETRIC_DEFAULT algorithm**
+- Each keypair is **signed using KMS Asymmetric P256 key**
+
 ## Format
 
 ```bash
